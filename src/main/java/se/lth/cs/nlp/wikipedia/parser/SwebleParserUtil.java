@@ -6,6 +6,7 @@ import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.WtEngineImpl;
 import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.nodes.EngProcessedPage;
+import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
 
 /**
@@ -13,11 +14,13 @@ import org.sweble.wikitext.parser.parser.LinkTargetException;
  */
 public class SwebleParserUtil {
     public static EngProcessedPage parseWikipage(WtEngineImpl engine, PageId pageId, String markup) throws EngineException {
+//        return null;
         return engine.postprocess(pageId, markup, null);
     }
 
     public static EngProcessedPage parsePage(WikiConfig config, String title, long revision, String markup) throws EngineException, LinkTargetException {
         WtEngineImpl engine = new WtEngineImpl(config);
+//        WtEngineImpl engine = new WtEngineImpl(DefaultConfigEnWp.generate());
 
         PageTitle pageTitle = PageTitle.make(config, title);
         PageId pageId = new PageId(pageTitle, revision);

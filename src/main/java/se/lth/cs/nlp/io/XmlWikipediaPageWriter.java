@@ -1,16 +1,16 @@
 /**
  * This file is part of Wikiforia.
- *
+ * <p>
  * Wikiforia is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Wikiforia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -34,11 +34,12 @@ public class XmlWikipediaPageWriter implements Sink<WikipediaPage> {
 
     /**
      * Default constructor
+     *
      * @param output which file to write to
      */
     public XmlWikipediaPageWriter(File output) {
         try {
-            this.writer = (XMLStreamWriter2)XMLOutputFactory2.newInstance().createXMLStreamWriter(new BufferedOutputStream(new FileOutputStream(output)), "utf-8");
+            this.writer = (XMLStreamWriter2) XMLOutputFactory2.newInstance().createXMLStreamWriter(new BufferedOutputStream(new FileOutputStream(output)), "utf-8");
             this.output = output;
             this.writer.writeStartDocument("utf-8", "1.0");
             this.writer.writeSpace("\n");
@@ -53,11 +54,11 @@ public class XmlWikipediaPageWriter implements Sink<WikipediaPage> {
 
     @Override
     public synchronized void process(List<WikipediaPage> batch) {
-        if(writer == null)
+        if (writer == null)
             return;
 
-        try {
-            if(batch.size() == 0) {
+        if (batch.size() == 0) {
+            try {
                 writer.writeEndElement();
                 writer.writeSpace("\n");
                 writer.writeEndDocument();
@@ -65,10 +66,18 @@ public class XmlWikipediaPageWriter implements Sink<WikipediaPage> {
                 writer.closeCompletely();
                 writer = null;
                 return;
+            } catch (XMLStreamException e) {
+                System.err.println("Error when writing file nothing !!!!!!");
+                throw new IOError(e);
             }
+        }
 
-            for (WikipediaPage wikipediaPage : batch) {
-                if(wikipediaPage.getText().length() > 0) {
+        for (WikipediaPage wikipediaPage : batch) {
+            if (String.valueOf(wikipediaPage.getTitle()).contains("Archives/Computing")) {
+                continue;
+            }
+            try {
+                if (wikipediaPage.getText().length() > 0) {
                     writer.writeStartElement("page");
                     writer.writeAttribute("id", String.valueOf(wikipediaPage.getId()));
                     writer.writeAttribute("title", String.valueOf(wikipediaPage.getTitle()));
@@ -86,10 +95,12 @@ public class XmlWikipediaPageWriter implements Sink<WikipediaPage> {
                     writer.writeEndElement();
                     writer.writeSpace("\n");
                 }
+            } catch (XMLStreamException e) {
+                System.err.println("Error when writing file " + String.valueOf(wikipediaPage.getTitle()));
+                throw new IOError(e);
             }
-        } catch (XMLStreamException e) {
-            throw new IOError(e);
         }
+
     }
 
     @Override

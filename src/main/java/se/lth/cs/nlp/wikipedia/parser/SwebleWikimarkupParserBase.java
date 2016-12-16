@@ -56,6 +56,8 @@ public abstract class SwebleWikimarkupParserBase<T> extends Mapper<Page,T,Page> 
         }
         catch (Exception ex)
         {
+//            System.err.println("WTF? ");;
+//            ex.printStackTrace();
             throw new RuntimeException(ex);
         }
     }

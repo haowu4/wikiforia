@@ -37,6 +37,9 @@ public class SwebleWikimarkupToText extends SwebleWikimarkupParserBase<Wikipedia
 
     @Override
     protected WikipediaPage extract(Page page, EngProcessedPage cp) {
+
+//        String text = page.getContent();
+
         SwebleTextAstWalker walker = new SwebleTextAstWalker(config);
         String text = (String)walker.go(cp.getPage());
         text = text.replaceAll("\\(\\s*\\)", " ");

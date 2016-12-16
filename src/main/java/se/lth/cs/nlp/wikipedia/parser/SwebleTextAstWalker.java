@@ -46,7 +46,7 @@ public class SwebleTextAstWalker extends AstVisitor<WtNode> {
     }
 
     @Override
-    protected boolean before(WtNode node)
+    protected WtNode before(WtNode node)
     {
         // This method is called by go() before visitation starts
         sb = new StringBuilder();
@@ -203,23 +203,48 @@ public class SwebleTextAstWalker extends AstVisitor<WtNode> {
 
         //int start = sb.length();
 
+
+
+//        String surface =
+        // Target is the surface. Because there must be a surface text.
+        sb.append("[");
         if(!isInsideFilteredSection()) {
-            sb.append(link.getPrefix());
+            if (!link.getPrefix().isEmpty())
+                sb.append(link.getPrefix());
         }
 
-        if (!link.hasTitle())
-        {
+        if (link.hasTitle()){
+            iterate(link.getTitle());
+        }else{
             iterate(link.getTarget());
         }
-        else
-        {
-            iterate(link.getTitle());
-        }
+//        if (!link.hasTitle())
+//        {
+//            sb.append("[");
+//            iterate(link.getTarget());
+//            sb.append("]");
+//        }
+//        else
+//        {
+//            sb.append("[~");
+//            iterate(link.getTitle());
+//            sb.append("~]");
+//        }
 
         if(!isInsideFilteredSection()) {
-            sb.append(link.getPostfix());
+//            if (!link.getPostfix().isEmpty())
+                sb.append(link.getPostfix());
         }
 
+
+        sb.append("]");
+        sb.append("(");
+
+
+        iterate(link.getTarget());
+        sb.append(")");
+
+//        sb.append("]");
         //int end = sb.length();
     }
 

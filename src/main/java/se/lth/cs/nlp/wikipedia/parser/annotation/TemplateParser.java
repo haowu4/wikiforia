@@ -40,10 +40,11 @@ public class TemplateParser extends AstVisitor<WtNode> {
     }
 
     @Override
-    protected boolean before(WtNode node)
+    protected WtNode before(WtNode node)
     {
         // This method is called by go() before visitation starts
         return super.before(node);
+
     }
 
     @Override

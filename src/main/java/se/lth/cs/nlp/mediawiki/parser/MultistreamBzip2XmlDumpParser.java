@@ -449,6 +449,7 @@ public class MultistreamBzip2XmlDumpParser extends AbstractEmitter<Page,Void> im
                 logger.error("Data put interrupted", e);
                 break;
             }
+//            break;
         }
 
         for (int i = 0; i < workers.length; i++) {
