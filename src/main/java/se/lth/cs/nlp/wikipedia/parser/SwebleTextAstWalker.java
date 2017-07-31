@@ -23,8 +23,12 @@ import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.nodes.EngPage;
 import org.sweble.wikitext.parser.nodes.*;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
+import se.lth.cs.nlp.wikipedia.ds.Mention;
+import se.lth.cs.nlp.wikipedia.ds.MentionsAndText;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Sweble AST walker that extracts text content from the parser AST tree.
@@ -33,6 +37,7 @@ public class SwebleTextAstWalker extends AstVisitor<WtNode> {
     private final WikiConfig config;
 
     private StringBuilder sb;
+    private List<Mention> mentions;
 
     private String currentSectionTitle;
 
@@ -40,6 +45,9 @@ public class SwebleTextAstWalker extends AstVisitor<WtNode> {
     private boolean expectSectionTitle;
 
     private boolean expectedTitleHref = false;
+    private int cStart;
+    private int cEnd;
+
 
     public static String encodeURL(String in) {
         return in.replaceAll(" ", "_");
@@ -55,6 +63,7 @@ public class SwebleTextAstWalker extends AstVisitor<WtNode> {
     protected WtNode before(WtNode node) {
         // This method is called by go() before visitation starts
         sb = new StringBuilder();
+        mentions = new ArrayList<>();
         currentSectionTitle = "";
         expectSectionTitle = false;
         return super.before(node);
@@ -62,7 +71,7 @@ public class SwebleTextAstWalker extends AstVisitor<WtNode> {
 
     @Override
     protected Object after(WtNode node, Object result) {
-        return sb.toString();
+        return new MentionsAndText(sb.toString(), mentions);
     }
 
     // =========================================================================
@@ -109,7 +118,8 @@ public class SwebleTextAstWalker extends AstVisitor<WtNode> {
 
     public void visit(WtText text) {
         if (expectedTitleHref) {
-            sb.append(encodeURL(text.getContent()));
+//            sb.append(encodeURL(text.getContent()));
+            mentions.add(new Mention(cStart, cEnd, encodeURL(text.getContent())));
             return;
         }
 
@@ -191,7 +201,9 @@ public class SwebleTextAstWalker extends AstVisitor<WtNode> {
 
 //        String surface =
         // Target is the surface. Because there must be a surface text.
-        sb.append("[");
+        // Start of the mention.
+        cStart = sb.length();
+//        sb.append("[");
         if (!isInsideFilteredSection()) {
             if (!link.getPrefix().isEmpty())
                 sb.append(link.getPrefix());
@@ -202,35 +214,20 @@ public class SwebleTextAstWalker extends AstVisitor<WtNode> {
         } else {
             iterate(link.getTarget());
         }
-//        if (!link.hasTitle())
-//        {
-//            sb.append("[");
-//            iterate(link.getTarget());
-//            sb.append("]");
-//        }
-//        else
-//        {
-//            sb.append("[~");
-//            iterate(link.getTitle());
-//            sb.append("~]");
-//        }
 
         if (!isInsideFilteredSection()) {
-//            if (!link.getPostfix().isEmpty())
             sb.append(link.getPostfix());
         }
 
+        cEnd = sb.length();
 
-        sb.append("]");
-        sb.append("(");
+//        sb.append("(");
 
         expectedTitleHref = true;
         iterate(link.getTarget());
-        expectedTitleHref = false;
-        sb.append(")");
 
-//        sb.append("]");
-        //int end = sb.length();
+        expectedTitleHref = false;
+//        sb.append(")");
     }
 
     public void visit(WtSection s) {

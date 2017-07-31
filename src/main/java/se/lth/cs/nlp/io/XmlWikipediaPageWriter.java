@@ -20,6 +20,7 @@ import org.codehaus.stax2.XMLOutputFactory2;
 import org.codehaus.stax2.XMLStreamWriter2;
 import se.lth.cs.nlp.mediawiki.model.WikipediaPage;
 import se.lth.cs.nlp.pipeline.Sink;
+import se.lth.cs.nlp.wikipedia.ds.Mention;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
@@ -76,6 +77,12 @@ public class XmlWikipediaPageWriter implements Sink<WikipediaPage> {
             if (String.valueOf(wikipediaPage.getTitle()).contains("Archives/Computing")) {
                 continue;
             }
+            if (String.valueOf(wikipediaPage.getTitle()).contains("Wikipedia:Village")) {
+                continue;
+            }
+            if (String.valueOf(wikipediaPage.getTitle()).contains("Wikipedia:")) {
+                continue;
+            }
             try {
                 if (wikipediaPage.getText().length() > 0) {
                     writer.writeStartElement("page");
@@ -90,8 +97,23 @@ public class XmlWikipediaPageWriter implements Sink<WikipediaPage> {
                         writer.writeAttribute("ns-name", "?");
                     else
                         writer.writeAttribute("ns-name", name);
+                    writer.writeSpace("\n");
+                    writer.writeStartElement("mentions");
+                    writer.writeSpace("\n");
+                    for (Mention m : wikipediaPage.getMentions()) {
+                        writer.writeStartElement("text");
+                        writer.writeAttribute("url", String.valueOf(m.url));
+                        writer.writeAttribute("start", String.valueOf(m.start));
+                        writer.writeAttribute("end", String.valueOf(m.end));
+                        writer.writeEndElement();
+                        writer.writeSpace("\n");
+                    }
+                    writer.writeEndElement();
 
+                    writer.writeStartElement("text");
                     writer.writeCharacters(wikipediaPage.getText());
+                    writer.writeEndElement();
+
                     writer.writeEndElement();
                     writer.writeSpace("\n");
                 }

@@ -1,16 +1,16 @@
 /**
  * This file is part of Wikiforia.
- *
+ * <p>
  * Wikiforia is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Wikiforia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -19,6 +19,7 @@ package se.lth.cs.nlp.wikipedia.parser;
 import org.sweble.wikitext.engine.nodes.EngProcessedPage;
 import se.lth.cs.nlp.mediawiki.model.Page;
 import se.lth.cs.nlp.mediawiki.model.WikipediaPage;
+import se.lth.cs.nlp.wikipedia.ds.MentionsAndText;
 import se.lth.cs.nlp.wikipedia.lang.TemplateConfig;
 
 import java.util.regex.Pattern;
@@ -41,14 +42,15 @@ public class SwebleWikimarkupToText extends SwebleWikimarkupParserBase<Wikipedia
 //        String text = page.getContent();
 
         SwebleTextAstWalker walker = new SwebleTextAstWalker(config);
-        String text = (String)walker.go(cp.getPage());
-        text = text.replaceAll("\\(\\s*\\)", " ");
-        text = text.replaceAll(" {2,}", " ");
-        text = text.replaceAll("\n{2,}", "\n\n");
-        text = trimLineStartFix.matcher(text).replaceAll("");
-        text = trimLineEndFix.matcher(text).replaceAll("");
-        text = text.trim();
+        MentionsAndText mntext = (MentionsAndText) walker.go(cp.getPage());
 
-        return new WikipediaPage(page, text);
+//        mntext.text = text.replaceAll("\\(\\s*\\)", " ");
+//        mntext.text = text.replaceAll(" {2,}", " ");
+//        mntext.text = text.replaceAll("\n{2,}", "\n\n");
+//        mntext.text = trimLineStartFix.matcher(text).replaceAll("");
+//        mntext.text = trimLineEndFix.matcher(text).replaceAll("");
+//        mntext.text = text.trim();
+
+        return new WikipediaPage(page, mntext);
     }
 }

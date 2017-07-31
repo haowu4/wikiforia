@@ -351,7 +351,7 @@ public class App
             CommandLine cmdline = parser.parse(options, args);
 
             File indexPath = null, pagesPath, outputPath;
-            int batchsize = 100;
+            int batchsize = 1000;
             int numThreads = Runtime.getRuntime().availableProcessors();
             String outputFormat = OUTPUT_FORMAT_DEFAULT;
 
